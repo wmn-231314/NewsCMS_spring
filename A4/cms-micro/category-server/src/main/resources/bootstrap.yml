@@ -1,0 +1,7 @@
+spring:
+  cloud:
+    config:
+      name: categoryserver
+      uri: http://localhost:8000
+      profile: dev
+      default-label: master

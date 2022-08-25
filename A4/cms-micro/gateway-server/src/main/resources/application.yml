@@ -1,0 +1,32 @@
+server:
+  port: 9500
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+spring:
+  application:
+    name: gateway
+  cloud:
+    gateway:
+      routes:
+      - id: user-server
+        uri: lb://userserver
+        predicates:
+        - Path=/news-micro/user/**
+      - id: review-server
+        uri: lb://reviewserver
+        predicates:
+        - Path=/news-micro/review/**
+      - id: news-server
+        uri: lb://newsserver
+        predicates:
+        - Path=/news-micro/news/**
+      - id: comment-server
+        uri: lb://commentserver
+        predicates:
+        - Path=/news-micro/comment/**
+      - id: category-server
+        uri: lb://categoryserver
+        predicates:
+        - Path=/news-micro/category/**

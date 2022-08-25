@@ -1,0 +1,36 @@
+server:
+  port: 9006
+  servlet:
+    context-path: /news-micro
+
+spring:
+  application:
+    name: newsserver
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/javaee?useSSL=false&useUnicode=true&characterEncoding=UTF8&serverTimezone=UTC&allowMultiQueries=true&allowPublicKeyRetrieval=true
+    username: root
+    password: 123456
+  jackson:
+    date-format: java.text.SimpleDateFormat
+    time-zone: Asia/Shanghai
+  kafka: # 声明kafka消息队列集群位置
+    producer:
+      bootstrap-servers: localhost:9092
+    consumer:
+      bootstrap-servers: localhost:9092
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+logging:
+  level:
+    com:
+      ning:
+        mapper: debug
+
+mybatis:
+  mapper-locations: com/ning/mapper/*.xml
+
+pagehelper:
+  helper-dialect: mysql
