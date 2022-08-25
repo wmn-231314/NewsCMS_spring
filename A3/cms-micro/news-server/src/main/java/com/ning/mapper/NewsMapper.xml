@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ning.mapper.NewsMapper">
+    <resultMap id="NewsMap" type="com.ning.entity.News">
+        <result property="providerId" column="provider_id"/>
+        <result property="reviewerId" column="reviewer_id"/>
+        <result property="postTime" column="post_time"/>
+        <result property="articleLikeCount" column="art_like_count"/>
+        <result property="categoryId" column="category_id"/>
+    </resultMap>
+    <select id="getAllNews" resultMap="NewsMap">
+        select * from news where status = 'Published'
+    </select>
+
+    <select id="getNewsByProviderId" parameterType="java.lang.Integer" resultMap="NewsMap">
+        select * from news where provider_id = #{pid} and status != 'Reviewing'
+    </select>
+
+    <select id="getNewsByReviewerId" parameterType="java.lang.Integer" resultMap="NewsMap">
+        select * from news where reviewer_id = #{rid} and status = 'Reviewing'
+    </select>
+
+    <select id="getNewsById" parameterType="java.lang.Integer" resultMap="NewsMap">
+        select * from news where id = #{id}
+    </select>
+
+    <select id="getSearchedNews" parameterType="com.ning.entity.News" resultMap="NewsMap">
+        select * from news
+        <where>
+            <if test="title!=null">
+                title like concat('%',#{title},'%')
+            </if>
+            <if test="categoryId!=null and categoryId > 0">
+                and category_id =#{categoryId}
+            </if>
+            and status = 'Published'
+        </where>
+        order by id desc
+    </select>
+
+    <select id="getNewsByStatus" parameterType="java.lang.String" resultMap="NewsMap">
+        select * from news where status = #{status}
+    </select>
+
+    <select id="getNewsByCategory" parameterType="java.lang.Integer" resultMap="NewsMap">
+        select * from news where category_id = #{categoryId} and status = 'Published'
+    </select>
+
+
+    <insert id="addNews" parameterType="com.ning.entity.News" useGeneratedKeys="true" keyProperty="id">
+        insert into news (provider_id,reviewer_id, title, content, status, post_time, category_id)
+        values (#{providerId},#{reviewerId},#{title},#{content},#{status},#{postTime},#{categoryId})
+    </insert>
+
+
+    <update id="updateNews" parameterType="com.ning.entity.News">
+        update news <set>
+            <if test="providerId != null and providerId > 0">provider_id=#{providerId},</if>
+            <if test="reviewerId != null and reviewerId > 0">reviewer_id=#{reviewerId},</if>
+            <if test="title != null">title=#{title},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="postTime != null"> post_time = #{postTime},</if>
+            <if test="articleLikeCount != null and articleLikeCount > 0">art_like_count = #{articleLikeCount},</if>
+            <if test="categoryId != null and categoryId > 0">category_id = #{categoryId}</if>
+        </set>where id = #{id}
+    </update>
+
+
+    <delete id="deleteNewsById" parameterType="java.lang.Integer">
+        delete from news where id = #{id}
+    </delete>
+
+    <delete id="deleteNewsByProviderId" parameterType="java.lang.Integer">
+        delete from news where provider_id = #{pid}
+    </delete>
+
+    <delete id="deleteNewsByReviewerId" parameterType="java.lang.Integer">
+        delete from news where reviewer_id = #{rid}
+    </delete>
+
+    <delete id="deleteNewsByList" parameterType="java.util.List">
+        delete from news where id IN
+        <foreach collection="list" item="bean" open="(" separator="," close=")">
+            #{bean.id,jdbcType=VARCHAR}
+        </foreach>
+    </delete>
+
+    <delete id="deleteNewsByStatus" parameterType="java.lang.String">
+        delete from news where status=#{status}
+    </delete>
+</mapper>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ning.mapper.UserMapper">
+    <resultMap id="UserMap" type="com.ning.entity.User">
+        <result property="registerTime" column="register_time"/>
+        <result property="lastLoginTime" column="last_login_time"/>
+    </resultMap>
+    <insert id="addUser" parameterType="com.ning.entity.User" useGeneratedKeys="true" keyProperty="id">
+        insert into user
+            (account, password, name, permission, token, register_time, last_login_time,banned)
+            VALUES (#{account},#{password},#{name},#{permission},#{token},#{registerTime},#{lastLoginTime},#{banned})
+    </insert>
+
+
+    <select id="getUserByAccount" parameterType="java.lang.String" resultMap="UserMap">
+        select * from user where account = #{account}
+    </select>
+
+    <select id="getUserById" parameterType="java.lang.Integer" resultMap="UserMap">
+        select * from user where id = #{id}
+    </select>
+
+    <select id="getUserListByPermission" parameterType="java.lang.String" resultMap="UserMap">
+        select * from user where permission = #{permission}
+    </select>
+
+    <select id="getAllUser" resultMap="UserMap">
+        select * from user
+    </select>
+
+    <select id="getBannedUserList" resultMap="UserMap" parameterType="java.lang.Integer">
+        select * from user where banned = #{banned} and permission not like 'AD%'
+    </select>
+
+
+    <update id="updateUser" parameterType="com.ning.entity.User">
+        update user <set>
+            <if test="password != null">password = #{password,jdbcType=VARCHAR},</if>
+            <if test="name != null">name = #{name,jdbcType=VARCHAR},</if>
+            <if test="permission != null">permission = #{permission,jdbcType=VARCHAR},</if>
+            <if test="token != null">token = #{token,jdbcType=VARCHER},</if>
+            <if test="registerTime != null">register_time = #{registerTime,jdbcType=TIMESTAMP},</if>
+            <if test="lastLoginTime != null">last_login_time = #{lastLoginTime,jdbcType=TIMESTAMP},</if>
+            <if test="banned != null and banned > 0">banned = #{banned,jdbcType=INTEGER}</if>
+        </set> where id = #{id}
+    </update>
+
+    <update id="updateUserByList" parameterType="java.util.List">
+        <foreach collection="list" item="bean" index="index" open="" close="" separator=";">
+            update user <set>
+                <if test="bean.password != null">password = #{bean.password,jdbcType=VARCHAR},</if>
+                <if test="bean.name != null">name = #{bean.name,jdbcType=VARCHAR},</if>
+                <if test="bean.permission != null">permission = #{bean.permission,jdbcType=VARCHAR},</if>
+                <if test="bean.token != null">token = #{bean.token,jdbcType=VARCHER},</if>
+                <if test="bean.registerTime != null">register_time = #{bean.registerTime,jdbcType=TIMESTAMP},</if>
+                <if test="bean.lastLoginTime != null">last_login_time = #{bean.lastLoginTime,jdbcType=TIMESTAMP},</if>
+                <if test="bean.banned != null">banned = #{bean.banned,jdbcType=INTEGER}</if>
+            </set> where id = #{bean.id}
+        </foreach>
+    </update>
+
+
+    <delete id="deleteUserByAccount" parameterType="java.lang.String">
+        delete from user where account = #{account}
+    </delete>
+
+    <delete id="deleteUserById" parameterType="java.lang.Integer">
+        delete from user where id = #{id}
+    </delete>
+
+    <delete id="deleteUserByList" parameterType="java.util.List">
+        delete from user where account IN
+        <foreach collection="list" item="bean" open="(" separator="," close=")">
+            #{bean.account,jdbcType=VARCHAR}
+        </foreach>
+    </delete>
+</mapper>

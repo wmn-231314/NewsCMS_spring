@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ning.mapper.NewsReviewMapper">
+    <resultMap id="NewsReviewMap" type="com.ning.entity.NewsReview">
+        <result property="newsId" column="news_id"/>
+        <result property="reviewerId" column="reviewer_id"/>
+        <result property="committerDescription" column="committer_description"/>
+        <result property="reviewerDescription" column="reviewer_description"/>
+        <result property="commitTime" column="commit_time"/>
+        <result property="reviewTime" column="review_time"/>
+    </resultMap>
+
+    <select id="getAllReview" resultMap="NewsReviewMap">
+        select * from news_review
+    </select>
+    
+    <select id="getReviewByReviewer" parameterType="java.lang.Integer" resultMap="NewsReviewMap">
+        select * from news_review where reviewer_id=#{rid}
+    </select>
+    
+    <select id="getReviewByNews" parameterType="java.lang.Integer" resultMap="NewsReviewMap">
+        select * from news_review where news_id=#{nid}
+    </select>
+
+
+    <insert id="addNewsReview" parameterType="com.ning.entity.NewsReview" useGeneratedKeys="true" keyProperty="id">
+        insert into news_review (news_id, reviewer_id, committer_description, reviewer_description, status, commit_time, review_time)
+        VALUES (#{newsId},#{reviewerId},#{committerDescription},#{reviewerDescription},#{status},#{commitTime},#{reviewTime})
+    </insert>
+
+
+    <delete id="deleteNewsReview" parameterType="com.ning.entity.NewsReview">
+        delete from news_review where id=#{id}
+    </delete>
+
+    <delete id="deleteNewsReviewByNews" parameterType="java.lang.Integer">
+        delete from news_review where news_id=#{nid}
+    </delete>
+
+    <delete id="deleteNewsReviewByReviewer" parameterType="java.lang.Integer">
+        delete from news_review where reviewer_id=#{rid}
+    </delete>
+
+
+    <update id="updateNewsReview" parameterType="com.ning.entity.NewsReview">
+        update news_review <set>
+        <if test="reviewerId != null and reviewerId > 0">reviewer_id=#{reviewerId},</if>
+        <if test="committerDescription != null">committer_description=#{committerDescription},</if>
+        <if test="reviewerDescription != null">reviewer_description = #{reviewerDescription},</if>
+        <if test="status != null"> status = #{status},</if>
+        <if test="commitTime != null">commit_time = #{commitTime},</if>
+        <if test="reviewTime != null">review_time = #{reviewTime}</if>
+    </set>where id = #{id}
+    </update>
+</mapper>

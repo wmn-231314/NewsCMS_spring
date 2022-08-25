@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ning.mapper.CommentMapper">
+    <resultMap id="CommentMap" type="com.ning.entity.Comment">
+        <result property="newsId" column="news_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="commitTime" column="commit_Time"/>
+    </resultMap>
+
+    <select id="getCommentByNews" parameterType="java.lang.Integer" resultMap="CommentMap">
+        select * from comment where news_id = #{nid}
+    </select>
+
+    <select id="getCommentByUserNews" resultMap="CommentMap">
+        select * from comment where news_id = #{nid} and user_id = #{uid}
+    </select>
+
+    <insert id="addComment" parameterType="com.ning.entity.Comment" useGeneratedKeys="true" keyProperty="id">
+        insert into comment (news_id, user_id, content, commit_time)
+        values (#{newsId},#{userId},#{content},#{commitTime})
+    </insert>
+
+    <update id="updateComment" parameterType="com.ning.entity.Comment">
+        update comment <set>
+        <if test="content != null">content = #{content},</if>
+        <if test="commitTime != null">commit_time = #{commitTime}</if>
+    </set>where id = #{id}
+    </update>
+
+    <delete id="deleteCommentByNews" parameterType="java.lang.Integer">
+        delete from comment where news_id = #{nid}
+    </delete>
+
+    <delete id="deleteCommentByUser" parameterType="java.lang.Integer">
+        delete from comment where user_id = #{uid}
+    </delete>
+
+    <delete id="deleteCommentById" parameterType="java.lang.Integer">
+        delete from comment where id = #{id}
+    </delete>
+
+    <delete id="deleteCommentByUserNews">
+        delete from comment where news_id = #{nid} and user_id = #{uid}
+    </delete>
+</mapper>
